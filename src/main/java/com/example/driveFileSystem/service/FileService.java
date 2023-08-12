@@ -54,6 +54,26 @@ public class FileService {
                 throw new FileUploadException("Failed to save the uploaded file.");
             }
         }
+
+    public String createFolder(Long userId, Long parentFolderId, String folderName) {
+        User user = userRepository.findById(userId).orElse(null);
+        Node parent = nodeRepository.findById(parentFolderId).orElse(null);
+
+        if (user == null || parent == null || !parent.getUser().equals(user)) {
+            throw new NotFoundException("User or parent folder not found.");
+        }
+
+        Node newFolder = new Node();
+        newFolder.setUser(user);
+        newFolder.setParent(parent);
+        newFolder.setName(folderName);
+        newFolder.setFolder(true);
+        newFolder.setCreatedAt(LocalDateTime.now());
+
+        nodeRepository.save(newFolder);
+
+        return "Folder created successfully.";
+    }
     }
 
-}
+

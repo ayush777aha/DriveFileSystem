@@ -6,7 +6,13 @@ public class NodeService {
     private NodeRepository nodeRepository;
 
     public List<NodeResponse> getItemsInFolder(Long userId, Long folderId, int page, int size, String sortField) {
-        // Existing code to retrieve user and parent node
+        User user = userRepository.findById(userId).orElse(null);
+        Node parent = nodeRepository.findById(folderId).orElse(null);
+
+        if (user == null || parent == null || !parent.getUser().equals(user)) {
+            throw new NotFoundException("User or folder not found.");
+        }
+
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortField));
         Page<Node> nodePage = nodeRepository.findByUserAndParent(user, parent, pageable);
